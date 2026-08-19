@@ -3,14 +3,14 @@ setlocal
 title Bad Apple ASCII
 cd /d "%~dp0"
 
-REM Dimensione ASCII del video
+REM ASCII size of the video
 set "W=100"
 set "H=40"
 
-REM Imposta dimensione finestra CMD
+REM Set CMD window size
 mode con: cols=%W% lines=%H%
 
-REM Disabilita il ridimensionamento della finestra
+REM Disable window resizing
 powershell -NoProfile -Command ^
 "Add-Type -Name Win32 -Namespace Native -MemberDefinition '[DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\")] public static extern int GetWindowLong(IntPtr hWnd,int nIndex); [DllImport(\"user32.dll\")] public static extern int SetWindowLong(IntPtr hWnd,int nIndex,int dwNewLong);'; ^
 $hwnd=[Native.Win32]::GetConsoleWindow(); ^
@@ -19,13 +19,13 @@ $style=$style -band (-bnot 0x00040000); ^
 $style=$style -band (-bnot 0x00010000); ^
 [Native.Win32]::SetWindowLong($hwnd,-16,$style)"
 
-REM Nasconde cursore
+REM Hide cursor
 powershell -NoProfile -Command "[Console]::CursorVisible=$false; [Console]::Clear()"
 
-REM Avvia audio
+REM Start audio
 start "" /B ffplay -nodisp -autoexit -loglevel quiet "bad_apple.mp3"
 
-REM Video ASCII
+REM ASCII video
 ffmpeg -i "bad_apple.mp4" -vf "fps=30,scale=%W%:%H%,format=gray" -f rawvideo -pix_fmt gray - 2>nul | powershell -NoProfile -Command ^
 "$w=%W%; $h=%H%; $fps=30; ^
 $chars='@%%#*+=-:. '; ^
@@ -51,7 +51,7 @@ while(($n=$stdin.Read($buf,0,$buf.Length)) -eq $buf.Length){ ^
     $frame++ ^
 }"
 
-REM Ripristina cursore
+REM Restore cursor
 powershell -NoProfile -Command "[Console]::CursorVisible=$true"
 
 cls
